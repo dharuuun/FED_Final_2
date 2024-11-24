@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Calendar 1</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .calendar {
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #0077cc;
+      color: white;
+      padding: 10px;
+    }
+    .calendar-header button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    .days div {
+      text-align: center;
+      padding: 10px;
+      margin: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .days div:hover {
+      background-color: #0077cc;
+      color: white;
+    }
+    .days div.selected {
+      background-color: #0077cc;
+      color: white;
+    }
+    .day-names {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      background-color: #0077cc;
+      color: white;
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="calendar">
+    <div class="calendar-header">
+      <button id="prev-month">&lt;</button>
+      <span id="month-year"></span>
+      <button id="next-month">&gt;</button>
+    </div>
+    <div class="day-names">
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div class="days"></div>
+  </div>
+  <script>
+    const daysContainer = document.querySelector('.days');
+    const monthYearDisplay = document.getElementById('month-year');
+    const prevMonthButton = document.getElementById('prev-month');
+    const nextMonthButton = document.getElementById('next-month');
+
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    function isLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+    }
+
+    function getDaysInMonth(month, year) {
+      return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    }
+
+    function renderCalendar() {
+      daysContainer.innerHTML = '';
+      const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      monthYearDisplay.textContent = `${today.toLocaleString('default', { month: 'long' })} ${currentYear}`;
+      
+      // Add empty slots for the first week
+      for (let i = 0; i < firstDay; i++) {
+        daysContainer.innerHTML += `<div></div>`;
+      }
+
+      // Add days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = day;
+        dayDiv.addEventListener('click', () => {
+          const previouslySelected = daysContainer.querySelector('.selected');
+          if (previouslySelected) {
+            previouslySelected.classList.remove('selected');
+          }
+          if (previouslySelected !== dayDiv) {
+            dayDiv.classList.add('selected');
+          }
+        });
+        daysContainer.appendChild(dayDiv);
+      }
+    }
+
+    prevMonthButton.addEventListener('click', () => {
+      currentMonth -= 1;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear -= 1;
+      }
+      renderCalendar();
+    });
+
+    nextMonthButton.addEventListener('click', () => {
+      currentMonth += 1;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear += 1;
+      }
+      renderCalendar();
+    });
+
+    renderCalendar();
+  </script>
+</body>
+</html>

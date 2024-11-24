@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Video Player</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .video-player {
+      width: 700px;
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+    video {
+      width: 100%;
+      display: block;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #444;
+      padding: 10px;
+    }
+    .controls button,
+    .controls input[type="range"] {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    .controls button:hover {
+      color: #00bcd4;
+    }
+    .progress-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      margin: 0 10px;
+    }
+    .progress {
+      flex: 1;
+      height: 5px;
+      background: #555;
+      cursor: pointer;
+      position: relative;
+    }
+    .progress .progress-bar {
+      height: 5px;
+      background: #00bcd4;
+      width: 0;
+    }
+    .volume-slider {
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-player">
+    <video id="video" src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+    <div class="controls">
+      <button id="playPause">►</button>
+      <div class="progress-container">
+        <div class="progress">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+      <button id="muteUnmute">🔇</button>
+      <input type="range" id="volume" class="volume-slider" min="0" max="1" step="0.1">
+      <button id="fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const playPauseBtn = document.getElementById('playPause');
+    const muteUnmuteBtn = document.getElementById('muteUnmute');
+    const volumeSlider = document.getElementById('volume');
+    const fullscreenBtn = document.getElementById('fullscreen');
+    const progressContainer = document.querySelector('.progress');
+    const progressBar = document.querySelector('.progress-bar');
+
+    // Play/Pause toggle
+    playPauseBtn.addEventListener('click', () => {
+      if (video.paused || video.ended) {
+        video.play();
+        playPauseBtn.textContent = '❚❚';
+      } else {
+        video.pause();
+        playPauseBtn.textContent = '►';
+      }
+    });
+
+    // Update progress bar as video plays
+    video.addEventListener('timeupdate', () => {
+      const progress = (video.currentTime / video.duration) * 100;
+      progressBar.style.width = `${progress}%`;
+    });
+
+    // Seek video on progress bar click
+    progressContainer.addEventListener('click', (e) => {
+      const clickX = e.offsetX;
+      const width = progressContainer.clientWidth;
+      const newTime = (clickX / width) * video.duration;
+      video.currentTime = newTime;
+    });
+
+    // Mute/Unmute toggle
+    muteUnmuteBtn.addEventListener('click', () => {
+      video.muted = !video.muted;
+      muteUnmuteBtn.textContent = video.muted ? '🔈' : '🔇';
+    });
+
+    // Adjust volume
+    volumeSlider.addEventListener('input', (e) => {
+      video.volume = e.target.value;
+    });
+
+    // Fullscreen toggle
+    fullscreenBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        video.parentElement.requestFullscreen();
+      }
+    });
+
+    // Reset play button on video end
+    video.addEventListener('ended', () => {
+      playPauseBtn.textContent = '►';
+    });
+  </script>
+</body>
+</html>
